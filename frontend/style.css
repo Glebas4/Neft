@@ -1,0 +1,72 @@
+.btn {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.btn:active {
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.btn#s {background-color: #4CAF50;}
+.btn#s:hover {background-color: #4CAF50;}
+.btn#s:active {background-color: #3e8e41;}
+
+.btn#k {background-color: #d62929;}
+.btn#k:hover {background-color: #d62929;}
+.btn#k:active {background-color: #bb1717;}
+
+.btn#l {background-color: #d3d91c;}
+.btn#l:hover {background-color: #d3d91c;}
+.btn#l:active {background-color: #bcc12f;}
+
+.btn#h {background-color: #644caf;}
+.btn#h:hover {background-color: #644caf;}
+.btn#h:active {background-color: #584496;}
+
+.btn#st {background-color: #ff9800;}
+.btn#st:hover {background-color: #ff9800;}
+.btn#st:active {background-color: #e48800;}
+
+body {
+  background-color: #fffedf;
+  font-weight: 1000;
+  font-size: 30px;
+}
+
+div {
+  display: inline
+}
+
+#b {
+  position: absolute;
+  top: 330px;
+  left: 15px;
+}
+
+#c {
+  position: absolute;
+  top: 380px;
+  left: 350px;
+}
+
+#d {
+  position: absolute;
+  top: 400px;
+  left: 350px;
+}
+
+#ar {
+  position: absolute;
+  top: 500px;
+  left: 350px;
+}
