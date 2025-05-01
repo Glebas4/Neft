@@ -1,0 +1,173 @@
+
+<html>
+
+<head>
+  <title>Clover stream</title>
+    <link rel="stylesheet" href="style.css">
+ </head>
+<meta charset="utf-8" />
+ <body>
+
+ <form  method="POST">
+       <input class="btn" type='button' id="s"   value="START">
+       <input class="btn" type="button" id="l"   value="LAND">
+       <input class="btn" type="button" id="k"   value="KILL">
+       <input class="btn" type="button" id="h"   value="HOME">
+
+</form>
+
+
+  <div style="width:1570px;">
+      <iframe class="frames" scrolling="no" align="top" src="http://192.168.11.1:8080/stream?topic=/main_camera/image_raw" width="320" height="240" frameborder="1" ></iframe>
+      <iframe class="frames" scrolling="no" align="top" src="http://192.168.11.1:8080/stream?topic=/Jet" width="192" height="256"  frameborder="1" ></iframe>
+      <iframe class="frames" src="http://192.168.11.1:57575/" width="700" height="530" frameborder="1" ></iframe>
+ </div>
+
+ <div style="width:300;" id="b">
+     <dl>
+     <p> &#129517; Drone coordinates:</p>
+     <div> <font color="#f00"> X  </font> : <div id="x"></div> </div>
+      <p></p>
+     <div> <font color="#38ff00"> Y  </font> : <div id="y"></div></div>
+      <p></p>
+     <div> <font color="##0028ff"> Z </font> : <div id="z"></div></div>
+     </dl>
+ </div>
+
+<div style="width:300;" id="d">
+     <div> &#128267; Power: <div id="vltg"> </div>V</div>
+ </div>
+
+<div style="width:300;" id="ar">
+     <div> &#128641; Arming: <div id="a"> </div></div>
+ </div>
+
+<script src="js/roslib.js"></script>
+    <script defer type="text/javascript">
+    //connect to ROS
+
+    var ros = new ROSLIB.Ros({ url: 'ws://' + location.hostname + ':9090' });
+
+    ros.on('connection', function() {console.log('Connected to websocket server.');});
+
+    ros.on('error', function(error) {alert('Error connecting to websocket server: ');});
+
+    ros.on('close', function() {console.log('Connection to websocket server closed.');});
+
+
+	var listener = new ROSLIB.Topic
+	({
+    ros : ros,
+    name : 'TELEMETRY',
+    messageType : 'std_msgs/Float32MultiArray'
+    });
+
+	listener.subscribe(function(message)
+		{
+		 console.log(message.data);
+		 var v = document.getElementById("vltg");
+		 var x = document.getElementById("x");
+		 var y = document.getElementById("y");
+		 var z = document.getElementById("z");
+		 var a = document.getElementById("a");
+
+         if(message.data[0] == null)
+            {
+             x.innerHTML = '?';
+		         y.innerHTML = '?';
+		         z.innerHTML = '?';
+            }
+         else
+             {
+		      x.innerHTML = message.data[0].toFixed(2);
+		      y.innerHTML = message.data[1].toFixed(2);
+		      z.innerHTML = message.data[2].toFixed(2);
+		      }
+
+		 v.innerHTML = message.data[3].toFixed(1);
+		 a.innerHTML = !!message.data[4];
+		});
+
+
+    var all_msg = new ROSLIB.Message({data: 1});
+    var state = 0;
+
+
+	//document.getElementById("testData").textContent = data;
+
+ //topics
+    var data = new ROSLIB.Topic  //Взлет
+    ({
+        ros : ros,
+        name : 'DATA_INT',
+        messageType : 'std_msgs/Int16'
+    });
+
+
+    var home_topic = new ROSLIB.Topic
+    ({
+        ros : ros,
+        name : 'HOME',
+        messageType : 'std_msgs/Int16'
+    });
+
+
+    const s = document.getElementById("s");
+    s.addEventListener("click", start); // Прописано внизу
+
+
+    const l = document.getElementById("l"); //Вызов сервиса посадки
+    l.addEventListener("click", posadka);
+    function posadka(){lnd.callService();}
+
+
+    const k = document.getElementById("k");
+    k.addEventListener("click", kill);
+    function kill(){killsw.callService(req, function(result) {console.log('DISARMED');});}
+
+
+    const h = document.getElementById("h");
+    h.addEventListener("click", home);
+    function home(){home_topic.publish(all_msg)}
+
+
+
+
+
+//land
+    var lnd = new ROSLIB.Service
+    ({
+      ros : ros,
+      name : '/land',
+      serviceType : 'std_srvs/Trigger'
+    });
+
+
+	var  killsw = new ROSLIB.Service
+    ({
+      ros : ros,
+      name : '/mavros/cmd/arming',
+      serviceType : 'mavors_msgs/CommandBool'
+    });
+
+	var req = new ROSLIB.ServiceRequest({value : false});
+
+
+//старт
+
+    var msg = new ROSLIB.Message({data: 2});
+    function start()
+        {
+            data.subscribe(function(message)
+            {
+              console.log(message.data);
+              state = message.data ;
+            })
+
+            if (state === 2){console.log('Declined')}
+            else{data.publish(msg)}
+        }
+
+ </script>
+ </body>
+</html>
