@@ -32,7 +32,7 @@ void setup()
 }
 
 
-// КАРТИНКИ
+
 void verx()
 {
   FastLED.clear(); 
@@ -127,14 +127,14 @@ void loop()
           switch(data)
                 {
                 case 1: 
-                      open(); 
-                      while (stepperL.tick(); && stepperR.tick();) {}    //open 
-                      client.write(1); break;                     
+                      client.write(1); 
+                      open();
+                      break;                     
                 
                 case 2: 
+                      client.write(1); 
                       close();
-                      while (stepperL.tick(); && stepperR.tick();) {}    //close
-                      client.write(1); break;                    
+                      break;                    
                 
                 case 3: 
                       verx(); 
@@ -151,14 +151,13 @@ void loop()
                       client.write(1); break;
                 
                 case 5:
-                      batka(); 
-                      client.write(1); break;                           //batka
+                      client.write(1);
+                      batka();  break;                           //batka
                 
                 case 6:
+                      client.write(1);
                       ledoff();
-                      close();
-                      while (stepperL.tick(); && stepperR.tick();) {}   //off
-                      client.write(1); break;          
+                      close(); break;     //off     
                
                 default: break;
                 }
