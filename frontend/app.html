@@ -62,7 +62,8 @@
     messageType : 'std_msgs/Float32MultiArray'
     });
 
-	listener.subscribe(function(message)
+	listener.subscribe
+		(function (message)
 		{
 		 console.log(message.data);
 		 var v = document.getElementById("vltg");
@@ -71,22 +72,23 @@
 		 var z = document.getElementById("z");
 		 var a = document.getElementById("a");
 
-         if(message.data[0] == null)
-            {
-             x.innerHTML = '?';
+         	if(message.data[0] == null)
+            		{
+             		 x.innerHTML = '?';
 		         y.innerHTML = '?';
 		         z.innerHTML = '?';
-            }
-         else
-             {
-		      x.innerHTML = message.data[0].toFixed(2);
-		      y.innerHTML = message.data[1].toFixed(2);
-		      z.innerHTML = message.data[2].toFixed(2);
-		      }
+            		}
+         	else
+             		{
+		      	 x.innerHTML = message.data[0].toFixed(2);
+		      	 y.innerHTML = message.data[1].toFixed(2);
+		      	 z.innerHTML = message.data[2].toFixed(2);
+		      	}	
 
 		 v.innerHTML = message.data[3].toFixed(1);
 		 a.innerHTML = !!message.data[4];
-		});
+		}
+		);
 
 
     var all_msg = new ROSLIB.Message({data: 1});
