@@ -18,17 +18,17 @@ commands = \
 
 
 def dport(arg):
-        msg = commands.get(str(arg))
-        sock.send(msg.encode("ascii"))
+    msg = commands.get(str(arg))
+    sock.send(msg.encode("ascii"))
+    data = sock.recv(1)
+    while not data:
         data = sock.recv(1)
-        while not data:
-            data = sock.recv(1)
-        #print('DONE')
+    #print('DONE')
 
 
 
 if __name__=='__main__':
     dport('takeoff')
-    #dport('close')
-    #dport('ledoff')
+    #dport('off')
     #dport('land')
+    #dport('batka')
