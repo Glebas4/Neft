@@ -15,11 +15,13 @@ GStepper< STEPPER4WIRE> stepperL(2038, 5, 7, 6, 8);  //Если смотреть
 GStepper< STEPPER4WIRE> stepperR(2038, 10, 18, 9, 19);  //Если смотреть на дронпорт со стороны матрицы - Правый
 
 
+
 void setup() 
 {
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {delay(500);}
+  wifiServer.begin();
 
   stepperL.autoPower(true);
   stepperR.autoPower(true);
@@ -28,16 +30,34 @@ void setup()
   stepperL.reverse(true);
 
   FastLED.addLeds <WS2812, PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.setBrightness(40);
+  FastLED.setBrightness(50);
+  ready();
 }
 
+
+void ready()
+{
+  FastLED.showColor(CRGB::Green);
+  tone(buz, 1300);
+  delay(500);
+  noTone(buz);
+  delay(500);
+  tone(buz, 1500);
+  delay(500);
+  noTone(buz);
+  tone(buz, 1700);
+  delay(500);
+  noTone(buz);
+  FastLED.clear();
+  FastLED.show();
+}
 
 
 void verx()
 {
   FastLED.clear(); 
-  for(int x=71; x<184 ) {x=x+16; leds[x] = CRGB::Green}
-  for(int x=72; x<185 ) {x=x+16; leds[x] = CRGB::Green}
+  for(int x=71; x<184;) { leds[x] = CRGB::Green; x=x+16;}
+  for(int x=72; x<185;) { leds[x] = CRGB::Green; x=x+16;}
   leds[169] = CRGB::Green;//verx
   leds[166] = CRGB::Green;
   leds[149] = CRGB::Green;
@@ -50,8 +70,8 @@ void verx()
 void vniz()
 {
   FastLED.clear(); 
-  for(int x=71; x<184 ) {x=x+16; leds[x] = CRGB::Red}
-  for(int x=72; x<185 ) {x=x+16; leds[x] = CRGB::Red}
+  for(int x=71; x<184;){ leds[x] = CRGB::Red; x=x+16;}
+  for(int x=72; x<185;){ leds[x] = CRGB::Red; x=x+16;}
   leds[86] = CRGB::Red;//vniz
   leds[89] = CRGB::Red;
   leds[106] = CRGB::Red;
@@ -76,6 +96,8 @@ void batka()
   FastLED.show();
 }
 
+// КАРТИНКИ
+
 
 void open()
 {
@@ -97,7 +119,7 @@ void zvuk()
   delay(500);
   noTone(buz);
   delay(500);
-  tone(buz, 1900, 1000);
+  tone(buz, 1900);
   delay(500);
   noTone(buz);
 }
@@ -126,40 +148,29 @@ void loop()
 
           switch(data)
                 {
-                case 1: 
-                      client.write(1); 
-                      open();
-                      break;                     
-                
-                case 2: 
-                      client.write(1); 
-                      close();
-                      break;                    
+                case 1: client.write(1); open(); break; //open  
+
+                case 2: client.write(1); close(); break;  //close
                 
                 case 3: 
                       verx(); 
                       zvuk(); 
                       open(); 
-                      while (stepperL.tick(); && stepperR.tick();) {}   //takeoff
-                      client.write(1); break;      
-               
-                case 4:
-                      vniz(); 
-                      zvuk(); 
-                      close();    
-                      while (stepperL.tick(); && stepperR.tick();) {}   //land
+                      while(stepperL.tick() && stepperR.tick()) {}            //takeoff
                       client.write(1); break;
                 
-                case 5:
-                      client.write(1);
-                      batka();  break;                           //batka
+                case 4: 
+                      vniz(); 
+                      zvuk(); 
+                      close();
+                      while(stepperL.tick() && stepperR.tick()) {}
+                      client.write(1); break;     //land
                 
-                case 6:
-                      client.write(1);
-                      ledoff();
-                      close(); break;     //off     
-               
-                default: break;
+                case 5: client.write(1); batka();  break;                    //charge
+                
+                case 6: client.write(1); ledoff(); close(); break;          //off
+
+                  default: break;
                 }
          
         }
