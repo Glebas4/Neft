@@ -1,4 +1,3 @@
-
 <html>
 
 <head>
@@ -13,14 +12,14 @@
        <input class="btn" type="button" id="l"   value="LAND">
        <input class="btn" type="button" id="k"   value="KILL">
        <input class="btn" type="button" id="h"   value="HOME">
-
+       <input class="btn" type="button" id="r"   value="REBOOT">
 </form>
 
 
   <div style="width:1570px;">
-      <iframe class="frames" scrolling="no" align="top" src="http://192.168.11.1:8080/stream?topic=/main_camera/image_raw" width="320" height="240" frameborder="1" ></iframe>
-      <iframe class="frames" scrolling="no" align="top" src="http://192.168.11.1:8080/stream?topic=/Jet" width="192" height="256"  frameborder="1" ></iframe>
-      <iframe class="frames" src="http://192.168.11.1:57575/" width="700" height="530" frameborder="1" ></iframe>
+      <iframe class="frames" scrolling="no" align="top" src="http://192.168.50.25:8080/stream?topic=/main_camera/image_raw" width="320" height="240" frameborder="1" ></iframe>
+      <iframe class="frames" scrolling="no" align="top" src="http://192.168.50.25:8080/stream?topic=/Jet" width="192" height="256"  frameborder="1" ></iframe>
+      <iframe class="frames" src="http://192.168.50.25:57575/" width="700" height="530" frameborder="1" ></iframe>
  </div>
 
  <div style="width:300;" id="b">
@@ -44,7 +43,6 @@
 
 <script src="js/roslib.js"></script>
     <script defer type="text/javascript">
-    //connect to ROS
 
     var ros = new ROSLIB.Ros({ url: 'ws://' + location.hostname + ':9090' });
 
@@ -54,122 +52,110 @@
 
     ros.on('close', function() {console.log('Connection to websocket server closed.');});
 
-
-	var listener = new ROSLIB.Topic
-	({
-    ros : ros,
-    name : 'TELEMETRY',
-    messageType : 'std_msgs/Float32MultiArray'
-    });
-
-	listener.subscribe
-		(function (message)
-		{
-		 console.log(message.data);
-		 var v = document.getElementById("vltg");
-		 var x = document.getElementById("x");
-		 var y = document.getElementById("y");
-		 var z = document.getElementById("z");
-		 var a = document.getElementById("a");
-
-         	if(message.data[0] == null)
-            		{
-             		 x.innerHTML = '?';
-		         y.innerHTML = '?';
-		         z.innerHTML = '?';
-            		}
-         	else
-             		{
-		      	 x.innerHTML = message.data[0].toFixed(2);
-		      	 y.innerHTML = message.data[1].toFixed(2);
-		      	 z.innerHTML = message.data[2].toFixed(2);
-		      	}	
-
-		 v.innerHTML = message.data[3].toFixed(1);
-		 a.innerHTML = !!message.data[4];
-		}
-		);
-
-
-    var all_msg = new ROSLIB.Message({data: 1});
+    var msg = new ROSLIB.Message({data: 2});
+    var req = new ROSLIB.ServiceRequest({value : false});
+    var rebarg = new ROSLIB.ServiceRequest({command : 246, param1 : 1})
+    var all_msg = new ROSLIB.Message({data : 1});
     var state = 0;
 
+    var listener = new ROSLIB.Topic   
+	({
+          ros : ros,    
+	  name : 'TELEMETRY',
+          messageType : 'std_msgs/Float32MultiArray'    
+	});
+   
+      listener.subscribe(function(message)
+         {       
+           console.log(message.data);
+           var v = document.getElementById("vltg");       
+           var x = document.getElementById("x");
+           var y = document.getElementById("y");       
+           var z = document.getElementById("z");
+           var a = document.getElementById("a");
+         
+           if(message.data[0] == null)            
+	       {
+                 x.innerHTML = '?';           
+	         y.innerHTML = '?';
+                 z.innerHTML = '?';            
+	       }
+         
+           else             
+               {
+                 x.innerHTML = message.data[0].toFixed(2);            
+	         y.innerHTML = message.data[1].toFixed(2);
+                 z.innerHTML = message.data[2].toFixed(2);            
+	       }
+             
+                 v.innerHTML = message.data[3].toFixed(1);
+       	         a.innerHTML = !!message.data[4];      
+            }
+	    );
 
-	//document.getElementById("testData").textContent = data;
-
- //topics
     var data = new ROSLIB.Topic  //Взлет
-    ({
-        ros : ros,
-        name : 'DATA_INT',
-        messageType : 'std_msgs/Int16'
+    ({        
+	ros : ros,
+        name : 'DATA_INT',        messageType : 'std_msgs/Int16'
     });
-
-
     var home_topic = new ROSLIB.Topic
-    ({
-        ros : ros,
+    ({  
+	ros : ros,
         name : 'HOME',
-        messageType : 'std_msgs/Int16'
-    });
-
+        messageType : 'std_msgs/Int16'    });
 
     const s = document.getElementById("s");
-    s.addEventListener("click", start); // Прописано внизу
-
-
+    s.addEventListener("click", start); 
+	    
     const l = document.getElementById("l"); //Вызов сервиса посадки
     l.addEventListener("click", posadka);
     function posadka(){lnd.callService();}
 
-
-    const k = document.getElementById("k");
+	    
+    const k = document.getElementById("k");   
     k.addEventListener("click", kill);
     function kill(){killsw.callService(req, function(result) {console.log('DISARMED');});}
 
-
-    const h = document.getElementById("h");
+	    
+    const h = document.getElementById("h");    
     h.addEventListener("click", home);
     function home(){home_topic.publish(all_msg)}
 
+	    
+    const r = document.getElementById("r");
+    r.addEventListener("click", reb);    
+    function reb(){reboot.callService(rebarg, function(result) {console.log('REBOOT');});}
 
-
-
-
-//land
-    var lnd = new ROSLIB.Service
+	    
+    var lnd = new ROSLIB.Service    
     ({
-      ros : ros,
+      ros : ros,      
       name : '/land',
-      serviceType : 'std_srvs/Trigger'
+      serviceType : 'std_srvs/Trigger'    
     });
 
-
-	var  killsw = new ROSLIB.Service
-    ({
-      ros : ros,
+	    
+   var  killsw = new ROSLIB.Service    
+   ({
+      ros : ros,      
       name : '/mavros/cmd/arming',
-      serviceType : 'mavors_msgs/CommandBool'
+      serviceType : 'mavros_msgs/CommandBool'    
+   });
+
+	    
+    var  reboot = new ROSLIB.Service    
+    ({
+      ros : ros,      
+      name : '/mavros/cmd/command',
+      serviceType : 'mavros_msgs/CommandLong'    
     });
 
-	var req = new ROSLIB.ServiceRequest({value : false});
-
-
-//старт
-
-    var msg = new ROSLIB.Message({data: 2});
-    function start()
-        {
-            data.subscribe(function(message)
-            {
-              console.log(message.data);
-              state = message.data ;
-            })
-
-            if (state === 2){console.log('Declined')}
-            else{data.publish(msg)}
-        }
-
- </script>
- </body>
-</html>
+    function start()        
+    {
+      data.subscribe(function(message) {console.log(message.data); state = message.data ;})
+      if (state === 2){console.log('Declined')}           
+      else{data.publish(msg)}
+     }
+ 
+</script>
+ </body></html>
