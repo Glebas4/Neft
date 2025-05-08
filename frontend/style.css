@@ -37,6 +37,11 @@
 .btn#st:hover {background-color: #ff9800;}
 .btn#st:active {background-color: #e48800;}
 
+.btn#r {background-color: #e59418;}
+.btn#r:hover {background-color: #e59418;}
+.btn#r:active {background-color: #c27c12;}
+
+
 body {
   background-color: #fffedf;
   font-weight: 1000;
@@ -56,17 +61,17 @@ div {
 #c {
   position: absolute;
   top: 380px;
-  left: 350px;
+  left: 310px;
 }
 
 #d {
   position: absolute;
-  top: 400px;
-  left: 350px;
+  top: 520px;
+  left: 310px;
 }
 
 #ar {
   position: absolute;
-  top: 500px;
-  left: 350px;
+  top: 480px;
+  left: 310px;
 }
