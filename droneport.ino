@@ -162,7 +162,7 @@ void loop()
                 case 4: 
                       vniz(); 
                       zvuk(); 
-                      close();
+                      open();
                       while(stepperL.tick() && stepperR.tick()) {}
                       client.write(1); break;     //land
                 
