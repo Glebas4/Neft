@@ -25,6 +25,8 @@ void setup()
 
   stepperL.autoPower(true);
   stepperR.autoPower(true);
+  stepperL.setMaxSpeed(400);
+  stepperR.setMaxSpeed(400);
   stepperL.reverse(true);
   stepperR.reverse(true);
 
