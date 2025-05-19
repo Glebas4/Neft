@@ -25,9 +25,8 @@ void setup()
 
   stepperL.autoPower(true);
   stepperR.autoPower(true);
-  stepperL.setMaxSpeed(400);
-  stepperR.setMaxSpeed(400);
   stepperL.reverse(true);
+  stepperR.reverse(true);
 
   FastLED.addLeds <WS2812, PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(50);
